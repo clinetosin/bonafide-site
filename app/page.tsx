@@ -20,6 +20,7 @@ import ItemArt from "@/components/ItemArt";
 import PawnCalculator from "@/components/PawnCalculator";
 import VerifyForm from "@/components/VerifyForm";
 import { cars, categories, items, newestFirst } from "@/lib/catalogue";
+import { CONTACT } from "@/lib/contact";
 
 const steps = [
   { Icon: PackageCheck, title: "Intake", text: "Logged, photographed and sealed in front of you." },
@@ -246,8 +247,8 @@ export default function Home() {
           </div>
           <div className="showrooms reveal-stagger">
             {[
-              { city: "Lagos", addr: "00 Placeholder Road, Victoria Island" },
-              { city: "Abuja", addr: "00 Placeholder Street, Maitama" },
+              { city: "Abuja", addr: CONTACT.address },
+              { city: "Lagos", addr: "Lagos showroom opening soon. Viewings by appointment." },
             ].map((s) => (
               <div key={s.city} className="showroom">
                 <div className="ph">Showroom photo</div>
@@ -255,7 +256,7 @@ export default function Home() {
                   <h3 className="h3">{s.city}</h3>
                   <p className="muted">{s.addr}</p>
                   <p className="small muted">Mon to Sat, 10:00 to 18:00 · Viewings by appointment</p>
-                  <a className="text-link" href="https://wa.me/2340000000000">
+                  <a className="text-link" href={`https://wa.me/${CONTACT.phoneIntl}`}>
                     Book a visit
                   </a>
                 </div>

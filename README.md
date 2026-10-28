@@ -46,6 +46,7 @@ Without Supabase or Paystack keys the site runs in demo mode: listings come from
 
 - All stock, prices, certificate numbers, VINs and dates in `lib/catalogue.ts`.
 - Item art is line drawings; replace with studio photos of each actual item (and 360° frames).
-- Phone, WhatsApp number, showroom addresses, hours, CAC RC number (header, footer, `.env`).
+- Lagos showroom address, hours, CAC RC number (header, footer). Phone, email and the Jabi address live in `lib/contact.ts`.
+- Item photos: `lib/photos.ts` holds illustrative Unsplash photos of each model. Replace them with studio photos of the actual item.
 - Guarantee terms, 24-hour payout, deposit amounts (₦500k items, ₦1m cars), pawn LTV 50% and ~6%/month fee.
 - Manufacturer links: check each URL; official imagery only with brand permission.

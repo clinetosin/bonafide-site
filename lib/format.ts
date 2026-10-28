@@ -1,3 +1,4 @@
+import { CONTACT } from "./contact";
 // Placeholder rate for the diaspora reference price. Replace with a daily rate feed.
 export const NGN_PER_USD = 1550;
 
@@ -27,6 +28,6 @@ export function formatKm(km: number) {
 }
 
 export function whatsappLink(message: string) {
-  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "2340000000000";
+  const number = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || CONTACT.phoneIntl;
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }

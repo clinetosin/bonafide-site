@@ -4,6 +4,8 @@ import { supabaseAdmin } from "@/lib/supabase";
 
 const MAX_PHOTOS = 8;
 const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_MEDIA = 10;
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 const TEXT_FIELDS = [
   "category", "mode", "brand", "model", "reference", "year", "mileage", "origin", "papers",
   "condition", "notes", "name", "phone", "email", "city", "handover",
@@ -27,12 +29,23 @@ export async function POST(req: Request) {
     .filter((p): p is File => p instanceof File && p.type.startsWith("image/") && p.size <= MAX_BYTES)
     .slice(0, MAX_PHOTOS);
 
+  // Extra photos and videos from the "Upload photos or videos" button.
+  const media = form
+    .getAll("media")
+    .filter(
+      (m): m is File =>
+        m instanceof File &&
+        ((m.type.startsWith("image/") && m.size <= MAX_BYTES) ||
+          (m.type.startsWith("video/") && m.size <= MAX_VIDEO_BYTES)),
+    )
+    .slice(0, MAX_MEDIA);
+
   const reference = makeReference("VAL");
   const db = supabaseAdmin();
 
   if (db) {
     const paths: string[] = [];
-    for (const [i, photo] of photos.entries()) {
+    for (const [i, photo] of [...photos, ...media].entries()) {
       const ext = photo.type.split("/")[1] || "jpg";
       const path = `${reference}/${i + 1}.${ext}`;
       const { error } = await db.storage.from("valuation-photos").upload(path, photo, { contentType: photo.type });

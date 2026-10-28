@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CONTACT } from "@/lib/contact";
 
 export default function Footer() {
   return (
@@ -11,13 +12,18 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="stack-2">
             <p>
-              WhatsApp{" "}
-              <a href="https://wa.me/2340000000000" style={{ color: "var(--on-brand)" }}>
-                +234 000 000 0000
+              Call or WhatsApp{" "}
+              <a href={`tel:+${CONTACT.phoneIntl}`} style={{ color: "var(--on-brand)" }}>
+                {CONTACT.phone}
               </a>
             </p>
-            <p>Lagos: 00 Placeholder Road, Victoria Island</p>
-            <p>Abuja: 00 Placeholder Street, Maitama</p>
+            <p>
+              Email{" "}
+              <a href={`mailto:${CONTACT.email}`} style={{ color: "var(--on-brand)" }}>
+                {CONTACT.email}
+              </a>
+            </p>
+            <p>{CONTACT.address}</p>
             <p>Mon to Sat, 10:00 to 18:00</p>
           </div>
           <div>

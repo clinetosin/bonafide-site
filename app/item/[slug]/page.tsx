@@ -9,6 +9,7 @@ import ProductCard from "@/components/ProductCard";
 import ReserveBox from "@/components/ReserveBox";
 import VerifiedSeal from "@/components/VerifiedSeal";
 import { getCategory, getItem, items } from "@/lib/catalogue";
+import { photoFor } from "@/lib/photos";
 import { formatDate, formatNaira, formatUsd } from "@/lib/format";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -48,7 +49,7 @@ export default async function ItemPage({ params }: Props) {
             <Link href={`/shop/${category.slug}`}>{category.name}</Link>
           </nav>
           <div className="pdp">
-            <Gallery art={item.art} tone={item.tone} title={title} />
+            <Gallery art={item.art} tone={item.tone} title={title} photo={photoFor(item.slug)} />
             <div className="buy-box">
               <span className="eyebrow">{item.brand}</span>
               <h1 className="h2">{item.name}</h1>

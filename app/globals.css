@@ -2396,3 +2396,42 @@ fieldset {
     display: none;
   }
 }
+
+/* Illustrative model photos (Unsplash) until studio photos of each item exist */
+.card-photo .photo,
+.gallery-photo,
+.thumb-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.card-photo .photo {
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+.card:hover .card-photo .photo {
+  transform: scale(1.04);
+}
+.thumb {
+  position: relative;
+  overflow: hidden;
+}
+.gallery-caption--photo {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 24px 12px 10px;
+  color: #fff;
+  background: linear-gradient(to top, rgb(0 0 0 / 0.55), transparent);
+}
+.gallery-caption--photo a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card:hover .card-photo .photo {
+    transform: none;
+  }
+}

@@ -9,6 +9,7 @@ import ManufacturerRef from "@/components/ManufacturerRef";
 import ReserveBox from "@/components/ReserveBox";
 import VerifiedSeal from "@/components/VerifiedSeal";
 import { cars, getCar } from "@/lib/catalogue";
+import { photoFor } from "@/lib/photos";
 import { formatDate, formatKm, formatNaira, formatUsd } from "@/lib/format";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -37,7 +38,7 @@ export default async function CarPage({ params }: Props) {
             <Link href="/">Home</Link> <span>/</span> <Link href="/cars">Cars</Link>
           </nav>
           <div className="pdp">
-            <Gallery art="car" tone={car.tone} title={title} allowSpin={false} />
+            <Gallery art="car" tone={car.tone} title={title} allowSpin={false} photo={photoFor(car.slug)} />
             <div className="buy-box">
               <span className="eyebrow">{car.make} · {car.origin}</span>
               <h1 className="h2">{car.year} {car.model} {car.trim}</h1>

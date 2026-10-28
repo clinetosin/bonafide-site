@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { AlertCircle, Camera, MessageCircle } from "lucide-react";
+import { AlertCircle, Camera, Film, ImagePlus, MessageCircle, X } from "lucide-react";
 import { whatsappLink } from "@/lib/format";
 import { SELL_CATEGORIES } from "@/lib/sell";
 
@@ -21,6 +21,14 @@ type Mode = "sell" | "pawn";
 
 const STEPS = ["Item", "Photos", "Your details", "Offer"];
 
+// Extra photos and short videos a seller can add beyond the four guided shots.
+const MAX_EXTRAS = 10;
+const MAX_IMAGE_MB = 10;
+const MAX_VIDEO_MB = 100;
+
+const fileSize = (bytes: number) =>
+  bytes > 1024 * 1024 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : `${Math.round(bytes / 1024)} KB`;
+
 export default function ValuationForm({
   initialCategory,
   initialMode,
@@ -35,6 +43,7 @@ export default function ValuationForm({
   const [mode, setMode] = useState<Mode>(initialMode === "pawn" ? "pawn" : "sell");
   const [fields, setFields] = useState<Record<string, string>>({});
   const [photos, setPhotos] = useState<(File | null)[]>([null, null, null, null]);
+  const [extras, setExtras] = useState<File[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
   const [reference, setReference] = useState<string | null>(null);
@@ -72,7 +81,7 @@ export default function ValuationForm({
       if (isCar && !fields.mileage) e.mileage = "Enter the mileage shown on the dashboard.";
       if (!fields.condition) e.condition = "Choose the closest condition.";
     }
-    if (step === 1 && photos.filter(Boolean).length < 2) {
+    if (step === 1 && photos.filter(Boolean).length + extras.length < 2) {
       e.photos = "Add at least two photos. Four gets you a firmer offer.";
     }
     if (step === 2) {
@@ -95,6 +104,7 @@ export default function ValuationForm({
     body.set("mode", mode);
     Object.entries(fields).forEach(([k, v]) => body.set(k, v));
     photos.forEach((p, i) => p && body.append("photos", p, `slot-${i + 1}-${p.name}`));
+    extras.forEach((f) => body.append("media", f, f.name));
     try {
       const res = await fetch("/api/valuation", { method: "POST", body });
       const data = await res.json();
@@ -270,6 +280,57 @@ export default function ValuationForm({
                 </span>
               </label>
             ))}
+          </div>
+          <div className="stack-3">
+            <label className="btn btn--secondary" style={{ justifySelf: "start", cursor: "pointer" }}>
+              <ImagePlus size={18} strokeWidth={1.5} /> Upload photos or videos
+              <input
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                className="sr-only"
+                onChange={(e) => {
+                  const picked = Array.from(e.target.files || []);
+                  e.target.value = "";
+                  const tooBig = picked.filter((f) =>
+                    f.type.startsWith("video/") ? f.size > MAX_VIDEO_MB * 1024 * 1024 : f.size > MAX_IMAGE_MB * 1024 * 1024,
+                  );
+                  const ok = picked.filter(
+                    (f) => (f.type.startsWith("image/") || f.type.startsWith("video/")) && !tooBig.includes(f),
+                  );
+                  setExtras((x) => [...x, ...ok].slice(0, MAX_EXTRAS));
+                  setErrors((er) => ({
+                    ...er,
+                    media: tooBig.length
+                      ? `${tooBig.map((f) => f.name).join(", ")} is too large. Photos up to ${MAX_IMAGE_MB} MB, videos up to ${MAX_VIDEO_MB} MB (about a minute).`
+                      : "",
+                  }));
+                }}
+              />
+            </label>
+            <span className="hint small muted">
+              Add more angles, receipts, or a short video showing it working. Up to {MAX_EXTRAS} files.
+            </span>
+            {extras.length > 0 && (
+              <ul className="chips" aria-label="Uploaded files" style={{ listStyle: "none", margin: 0, padding: 0 }}>
+                {extras.map((f, i) => (
+                  <li key={`${f.name}-${i}`} className="chip" style={{ cursor: "default" }}>
+                    {f.type.startsWith("video/") ? <Film size={14} strokeWidth={1.5} /> : <ImagePlus size={14} strokeWidth={1.5} />}
+                    <span>{f.name.length > 22 ? `${f.name.slice(0, 20)}…` : f.name}</span>
+                    <span className="muted">{fileSize(f.size)}</span>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${f.name}`}
+                      onClick={() => setExtras((x) => x.filter((_, j) => j !== i))}
+                      style={{ border: 0, background: "none", padding: 0, cursor: "pointer", display: "inline-flex" }}
+                    >
+                      <X size={14} />
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {err("media")}
           </div>
           {err("photos")}
           <div className="field">

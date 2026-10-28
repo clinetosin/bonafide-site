@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Rotate3d, ScanSearch } from "lucide-react";
 import type { ArtKind } from "@/lib/catalogue";
+import type { Photo } from "@/lib/photos";
 import ItemArt from "./ItemArt";
 
 type Shot = { label: string; kind: "studio-front" | "studio-back" | "detail" | "inspection" };
@@ -21,6 +22,7 @@ export default function Gallery({
   title,
   spinFrames,
   allowSpin = true,
+  photo,
 }: {
   allowSpin?: boolean;
   art: ArtKind;
@@ -28,10 +30,13 @@ export default function Gallery({
   title: string;
   /** Real 360° turntable frames (24 to 36 images) once photographed. */
   spinFrames?: string[];
+  /** Illustrative photo of the model, shown as the front shot. */
+  photo?: Photo;
 }) {
   const [active, setActive] = useState(0);
   const [spin, setSpin] = useState(false);
   const shot = SHOTS[active];
+  const showPhoto = !spin && photo && shot.kind === "studio-front";
 
   return (
     <div className="gallery">
@@ -39,7 +44,12 @@ export default function Gallery({
         {spin ? (
           <Spinner art={art} tone={tone} title={title} frames={spinFrames} />
         ) : (
-          <StillView shot={shot} art={art} tone={tone} title={title} />
+          showPhoto ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img className="gallery-photo" src={photo.src} alt={photo.alt} />
+          ) : (
+            <StillView shot={shot} art={art} tone={tone} title={title} />
+          )
         )}
         {allowSpin && <div className="gallery-tools">
           <button
@@ -52,7 +62,15 @@ export default function Gallery({
             {spin ? "Photos" : "360° view"}
           </button>
         </div>}
-        {!spin && (
+        {showPhoto && (
+          <div className="gallery-caption gallery-caption--photo">
+            <span>Illustrative photo of this model</span>
+            <a href={photo.page} target="_blank" rel="noopener noreferrer">
+              {photo.credit} / Unsplash
+            </a>
+          </div>
+        )}
+        {!spin && !showPhoto && (
           <div className="gallery-caption">
             <span className="ref" style={{ color: "var(--photo-ink)" }}>
               {shot.kind === "inspection" ? "INSPECTION · " : ""}
@@ -76,7 +94,10 @@ export default function Gallery({
               setSpin(false);
             }}
           >
-            {s.kind === "inspection" ? (
+            {s.kind === "studio-front" && photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img className="thumb-photo" src={photo.src} alt="" loading="lazy" />
+            ) : s.kind === "inspection" ? (
               <ScanSearch size={22} strokeWidth={1.5} color="#5d6461" />
             ) : (
               <ItemArt kind={art} tone={tone} side={s.kind === "studio-back" ? "back" : "front"} />

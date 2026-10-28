@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Search, ShieldCheck } from "lucide-react";
+import { CONTACT } from "@/lib/contact";
 import MobileNav from "./MobileNav";
 import NavLinks from "./NavLinks";
 
@@ -11,7 +12,8 @@ export default function Header() {
           <span>Lagos · Abuja showrooms · Insured delivery nationwide</span>
           <div className="utility-right">
             <Link href="/verify">Verify a certificate</Link>
-            <a href="tel:+2340000000000">+234 000 000 0000</a>
+            <a href={`tel:+${CONTACT.phoneIntl}`}>{CONTACT.phone}</a>
+            <a href={`mailto:${CONTACT.email}`} className="hide-mobile">{CONTACT.email}</a>
           </div>
         </div>
       </div>
